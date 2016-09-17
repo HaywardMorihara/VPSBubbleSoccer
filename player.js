@@ -39,53 +39,80 @@ function updatePlayer(player, controller) {
     }
 }
 
-
-function animatePlayer(player) {
+function animatePlayer(player,controller) {
 	var fps = 5 + Math.min(1, Math.max(Math.abs(player.body.velocity.x), Math.abs(player.body.velocity.y)) / 200) * 20;
-	//Animation isn't working correctly
     if(player.body.velocity.x == 0 && player.body.velocity.y == 0) {
-    	console.log("stopping all animation");
         player.walkingRightAnim.stop();
         player.walkingUpAnim.stop();
         player.walkingDownAnim.stop();
         player.walkingLeftAnim.stop();
     }else{
-        if(Math.abs(player.body.velocity.x) > Math.abs(player.body.velocity.y)) {
-        	player.walkingUpAnim.stop();
-        	player.walkingDownAnim.stop();
-            if(player.body.velocity.x > 0) {
-            	player.walkingLeftAnim.stop();
-                if(player.walkingRightAnim.isPlaying) {
-            		player.walkingRightAnim.speed = fps;
-        		} else {
-            		player.walkingRightAnim.play(fps, true);
-        		}
-          	}else{
-          		player.walkingRightAnim.stop();
-                if(player.walkingLeftAnim.isPlaying) {
-            		player.walkingLeftAnim.speed = fps;
-        		} else {
-            		player.walkingLeftAnim.play(fps, true);
-       			}
+        if(Math.abs(cStickLR) > Math.abs(cStickUD)){
+            player.walkingUpAnim.stop();
+            player.walkingDownAnim.stop();
+            if(cStickLR > 0) {
+                player.walkingLeftAnim.stop();
+                playAnimation(player.walkingRightAnim,fps);
+            }else{
+                player.walkingRightAnim.stop();
+                playAnimation(player.walkingLeftAnim,fps);
             }
         }else{
-        	player.walkingRightAnim.stop();
-        	player.walkingLeftAnim.stop();
-            if(player.body.velocity.y > 0) {
-            	player.walkingUpAnim.stop();
-                if(player.walkingDownAnim.isPlaying) {
-            		player.walkingDownAnim.speed = fps;
-        		} else {
-            		player.walkingDownAnim.play(fps, true);
-       			 }
+            player.walkingLeftAnim.stop();
+            player.walkingRightAnim.stop();
+            if(cStickUD > 0) {
+                player.walkingUpAnim.stop();
+                playAnimation(player.walkingDownAnim,fps);
             }else{
-            	player.walkingDownAnim.stop();
-                if(player.walkingUpAnim.isPlaying) {
-            		player.walkingUpAnim.speed = fps;
-        		} else {
-           			 player.walkingUpAnim.play(fps, true);
-        		}
+                player.walkingDownAnim.stop();
+                playAnimation(player.walkingUpAnim,fps);
             }
         }
+        //old code that did direction based on velocity, not the direction controller pointing
+        // if(Math.abs(player.body.velocity.x) > Math.abs(player.body.velocity.y)) {
+        // 	player.walkingUpAnim.stop();
+        // 	player.walkingDownAnim.stop();
+        //     if(player.body.velocity.x > 0) {
+        //     	player.walkingLeftAnim.stop();
+        //         if(player.walkingRightAnim.isPlaying) {
+        //     		player.walkingRightAnim.speed = fps;
+        // 		} else {
+        //     		player.walkingRightAnim.play(fps, true);
+        // 		}
+        //   	}else{
+        //   		player.walkingRightAnim.stop();
+        //         if(player.walkingLeftAnim.isPlaying) {
+        //     		player.walkingLeftAnim.speed = fps;
+        // 		} else {
+        //     		player.walkingLeftAnim.play(fps, true);
+       	// 		}
+        //     }
+        // }else{
+        // 	player.walkingRightAnim.stop();
+        // 	player.walkingLeftAnim.stop();
+        //     if(player.body.velocity.y > 0) {
+        //     	player.walkingUpAnim.stop();
+        //         if(player.walkingDownAnim.isPlaying) {
+        //     		player.walkingDownAnim.speed = fps;
+        // 		} else {
+        //     		player.walkingDownAnim.play(fps, true);
+       	// 		 }
+        //     }else{
+        //     	player.walkingDownAnim.stop();
+        //         if(player.walkingUpAnim.isPlaying) {
+        //     		player.walkingUpAnim.speed = fps;
+        // 		} else {
+        //    			 player.walkingUpAnim.play(fps, true);
+        // 		}
+        //     }
+        // }
+    }
+}
+
+function playAnimation(animation, fps) {
+    if(animation.isPlaying) {
+        animation.speed = fps;
+    } else {
+        animation.play(fps, true);
     }
 }
