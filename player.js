@@ -1,45 +1,68 @@
+var playerScale = .75;
+var playerSpeedValue = 10;
+var playerDampeningValue = 10;
+var playerBounce = .5;
+
+function initializePlayer(game,playerNumber,x,y) {
+    var player = game.add.sprite(x,y,'player');
+    player.scale.setTo(playerScale,playerScale);
+    player.speedValue = playerSpeedValue;
+    player.dampening = playerDampeningValue;
+    player.playerNumber = playerNumber
+    return player;
+}
+
+function initializePlayerAnim(player) {
+    player.walkingRightAnim = player.animations.add('player_walking_right',[0,1,2,3,4,5,6]);
+    player.walkingUpAnim = player.animations.add('player_walking_up',[7,8,9,10,11,12,13]);
+    player.walkingDownAnim = player.animations.add('player_walking_down',[14,15,16,17,18,19,20]);
+    player.walkingLeftAnim = player.animations.add('player_walking_left',[21,22,23,24,25,26,27]);
+}
+
+function initializePlayerPhysics(player) {
+    player.body.bounce.setTo(playerBounce,playerBounce);
+    player.body.collideWorldBounds = true;
+}
+
 function updatePlayer(player, controller) {
-	cStickLR = controller.axis(0);
-    cStickUD = controller.axis(4);
+	var cStickLR = controller.axis(player.playerNumber - 1);
+    var cStickUD = controller.axis(player.playerNumber == 1? 4 : 2? 6 : 3? 5 : 7);
 
-    if(cStickLR == 0) {
-    	if(player.body.velocity.x > 0) {
-    		if (player.body.velocity.x - player.dampening < 0) {
-    			player.body.velocity.x = 0;
-    		}else{
-    			player.body.velocity.x -= player.dampening;
-    		}
-    	}else{
-    		if (player.body.velocity.x + player.dampening > 0) {
-    			player.body.velocity.x = 0;
-    		}else{
-    			player.body.velocity.x += player.dampening;
-    		}
-    	}
-    }else{
-    	player.body.velocity.x += cStickLR * player.speedValue;
-    }
+	if(player.body.velocity.x > 0 && cStickLR <= 0) {
+		if (player.body.velocity.x - player.dampening < 0) {
+			player.body.velocity.x = 0;
+		}else{
+			player.body.velocity.x -= player.dampening;
+		}
+	}else if(player.body.velocity.x < 0 && cStickLR >= 0) {
+		if (player.body.velocity.x + player.dampening > 0) {
+			player.body.velocity.x = 0;
+		}else{
+			player.body.velocity.x += player.dampening;
+		}
+	}
+	player.body.velocity.x += cStickLR * player.speedValue;
 
-    if(cStickUD == 0) {
-    	if(player.body.velocity.y > 0) {
-    		if (player.body.velocity.y - player.dampening < 0) {
-    			player.body.velocity.y = 0;
-    		}else{
-    			player.body.velocity.y -= player.dampening;
-    		}
-    	}else{
-    		if (player.body.velocity.y + player.dampening > 0) {
-    			player.body.velocity.y = 0;
-    		}else{
-    			player.body.velocity.y += player.dampening;
-    		}
-    	}
-    }else{
-    	player.body.velocity.y += cStickUD * player.speedValue;
-    }
+	if(player.body.velocity.y > 0 && cStickUD <=0) {
+		if (player.body.velocity.y - player.dampening < 0) {
+			player.body.velocity.y = 0;
+		}else{
+			player.body.velocity.y -= player.dampening;
+		}
+	} else if(player.body.velocity.y < 0 && cStickUD >= 0) {
+		if (player.body.velocity.y + player.dampening > 0) {
+			player.body.velocity.y = 0;
+		}else{
+			player.body.velocity.y += player.dampening;
+		}
+	}
+	player.body.velocity.y += cStickUD * player.speedValue;
 }
 
 function animatePlayer(player,controller) {
+    var cStickLR = controller.axis(player.playerNumber - 1);
+    var cStickUD = controller.axis(player.playerNumber == 1? 4 : 2? 6 : 3? 5 : 7);
+
 	var fps = 5 + Math.min(1, Math.max(Math.abs(player.body.velocity.x), Math.abs(player.body.velocity.y)) / 200) * 20;
     if(player.body.velocity.x == 0 && player.body.velocity.y == 0) {
         player.walkingRightAnim.stop();
@@ -57,7 +80,7 @@ function animatePlayer(player,controller) {
                 player.walkingRightAnim.stop();
                 playAnimation(player.walkingLeftAnim,fps);
             }
-        }else{
+        }else if (Math.abs(cStickLR) < Math.abs(cStickUD)){
             player.walkingLeftAnim.stop();
             player.walkingRightAnim.stop();
             if(cStickUD > 0) {
@@ -68,44 +91,6 @@ function animatePlayer(player,controller) {
                 playAnimation(player.walkingUpAnim,fps);
             }
         }
-        //old code that did direction based on velocity, not the direction controller pointing
-        // if(Math.abs(player.body.velocity.x) > Math.abs(player.body.velocity.y)) {
-        // 	player.walkingUpAnim.stop();
-        // 	player.walkingDownAnim.stop();
-        //     if(player.body.velocity.x > 0) {
-        //     	player.walkingLeftAnim.stop();
-        //         if(player.walkingRightAnim.isPlaying) {
-        //     		player.walkingRightAnim.speed = fps;
-        // 		} else {
-        //     		player.walkingRightAnim.play(fps, true);
-        // 		}
-        //   	}else{
-        //   		player.walkingRightAnim.stop();
-        //         if(player.walkingLeftAnim.isPlaying) {
-        //     		player.walkingLeftAnim.speed = fps;
-        // 		} else {
-        //     		player.walkingLeftAnim.play(fps, true);
-       	// 		}
-        //     }
-        // }else{
-        // 	player.walkingRightAnim.stop();
-        // 	player.walkingLeftAnim.stop();
-        //     if(player.body.velocity.y > 0) {
-        //     	player.walkingUpAnim.stop();
-        //         if(player.walkingDownAnim.isPlaying) {
-        //     		player.walkingDownAnim.speed = fps;
-        // 		} else {
-        //     		player.walkingDownAnim.play(fps, true);
-       	// 		 }
-        //     }else{
-        //     	player.walkingDownAnim.stop();
-        //         if(player.walkingUpAnim.isPlaying) {
-        //     		player.walkingUpAnim.speed = fps;
-        // 		} else {
-        //    			 player.walkingUpAnim.play(fps, true);
-        // 		}
-        //     }
-        // }
     }
 }
 
@@ -116,3 +101,42 @@ function playAnimation(animation, fps) {
         animation.play(fps, true);
     }
 }
+
+//old code that did direction based on velocity, not the direction controller pointing
+        // if(Math.abs(player.body.velocity.x) > Math.abs(player.body.velocity.y)) {
+        //  player.walkingUpAnim.stop();
+        //  player.walkingDownAnim.stop();
+        //     if(player.body.velocity.x > 0) {
+        //      player.walkingLeftAnim.stop();
+        //         if(player.walkingRightAnim.isPlaying) {
+        //          player.walkingRightAnim.speed = fps;
+        //      } else {
+        //          player.walkingRightAnim.play(fps, true);
+        //      }
+        //      }else{
+        //          player.walkingRightAnim.stop();
+        //         if(player.walkingLeftAnim.isPlaying) {
+        //          player.walkingLeftAnim.speed = fps;
+        //      } else {
+        //          player.walkingLeftAnim.play(fps, true);
+        //      }
+        //     }
+        // }else{
+        //  player.walkingRightAnim.stop();
+        //  player.walkingLeftAnim.stop();
+        //     if(player.body.velocity.y > 0) {
+        //      player.walkingUpAnim.stop();
+        //         if(player.walkingDownAnim.isPlaying) {
+        //          player.walkingDownAnim.speed = fps;
+        //      } else {
+        //          player.walkingDownAnim.play(fps, true);
+        //       }
+        //     }else{
+        //      player.walkingDownAnim.stop();
+        //         if(player.walkingUpAnim.isPlaying) {
+        //          player.walkingUpAnim.speed = fps;
+        //      } else {
+        //               player.walkingUpAnim.play(fps, true);
+        //      }
+        //     }
+        // }

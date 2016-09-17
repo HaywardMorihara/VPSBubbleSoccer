@@ -1,3 +1,4 @@
+//Player 1
 //X = 0
 //A = 1
 //B = 2
@@ -17,3 +18,13 @@
 //CStickUp/Down = 11
 //L2 = 12
 //R2 = 18
+
+//Axis
+//P1LR = 0
+//P1UD = 4
+//P2LR = 1
+//P2UD = 5
+//P3LR = 2
+//P3UD = 6
+//P4LR = 3
+//P4UD = 7

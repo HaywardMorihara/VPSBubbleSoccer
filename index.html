@@ -14,7 +14,7 @@
 
     window.onload = function() {
 
-        var controller1;
+        var controller;
 
         var fieldLength = 720;
         var fieldWidth = 540;
@@ -22,6 +22,8 @@
         var wallWidth = 80;
         var midWallLength = 160;
         var goalWidth = 540 - 2 * midWallLength;
+
+        var playerSpriteWidth = 111;
 
         var gameWidth = fieldLength + 2 * wallWidth;
         var gameHeight = fieldWidth + 2 * wallWidth;
@@ -51,6 +53,7 @@
 
         var ball;
         var player1;
+        var player2;
         //var omfgDogs;
 
         function preload() {
@@ -59,29 +62,29 @@
             game.load.image('soccer_field', 'assets/sprites/soccerField.jpg');
 
             game.load.spritesheet('soccer_ball', 'assets/sprites/soccerball.png', 64, 64, 7);
-            game.load.spritesheet('player','assets/sprites/annie.png',111, 115, 28);
+            game.load.spritesheet('player','assets/sprites/annie.png',playerSpriteWidth, 115, 28);
             //game.load.spritesheet('omfgdogs','assets/sprites/omfgdogs-spritesheet.png',384,80,48)
         }
 
 
         function create() {
-            initializeControllers();
+            initializeController();
             initializeMusic();
             initializeSprites();
             initializeAnimations();
             initializePhysics();   
         }
 
-        function initializeControllers() {
+        function initializeController() {
             //Gamecube only works in Firefox...might be able to get external library if I want
             game.input.gamepad.start();
             // To listen to buttons from a specific pad listen directly on that pad game.input.gamepad.padX, where X = pad 1-4
-            controller1 = game.input.gamepad.pad1;
+            controller = game.input.gamepad.pad1;
         }
 
         function initializeMusic() {
             music = game.add.audio('omfgdogs_music');
-            //music.play();
+            music.play();
         }
 
         function initializeSprites() {
@@ -107,10 +110,8 @@
             ball.anchor.setTo(0.5, 0.5);
             ball.scale.setTo(.75,.75);
 
-            player1 = game.add.sprite(wallWidth,wallWidth,'player');
-            player1.scale.setTo(.75,.75);
-            player1.speedValue = 10;
-            player1.dampening = 10;
+            player1 = initializePlayer(game,1,wallWidth,wallWidth);
+            player2 = initializePlayer(game,2,wallWidth+fieldLength-playerSpriteWidth,wallWidth);
 
             //omfgDogs = game.add.sprite(0,0,'omfgdogs');
 
@@ -119,10 +120,8 @@
         function initializeAnimations() {
             ball.rollingBallAnim = ball.animations.add('rolling_ball'); 
 
-            player1.walkingRightAnim = player1.animations.add('player_walking_right',[0,1,2,3,4,5,6]);
-            player1.walkingUpAnim = player1.animations.add('player_walking_up',[7,8,9,10,11,12,13]);
-            player1.walkingDownAnim = player1.animations.add('player_walking_down',[14,15,16,17,18,19,20]);
-            player1.walkingLeftAnim = player1.animations.add('player_walking_left',[21,22,23,24,25,26,27]);
+            initializePlayerAnim(player1);
+            initializePlayerAnim(player2);
 
             //omfgDogsRunning = omfgDogs.animations.add('omfgdogs_running');
             //omfgDogsRunning.play(10,false);
@@ -130,7 +129,7 @@
 
         function initializePhysics() {
             game.physics.startSystem(Phaser.Physics.ARCADE);
-            game.physics.enable([ball,player1,redGoal,blueGoal,topWall,bottomWall,midTopLeftWall,midBottomLeftWall,midTopRightWall,midBottomRightWall], Phaser.Physics.ARCADE);
+            game.physics.enable([ball,player1,player2,redGoal,blueGoal,topWall,bottomWall,midTopLeftWall,midBottomLeftWall,midTopRightWall,midBottomRightWall], Phaser.Physics.ARCADE);
             
             initializeWallPhysics();
 
@@ -142,8 +141,8 @@
             // and vertical vectors (as an x,y point). "1" is 100% energy return
             ball.body.bounce.setTo(.8,.8);
 
-            player1.body.collideWorldBounds = true;
-            player1.body.bounce.setTo(.5,.5);
+            initializePlayerPhysics(player1);
+            initializePlayerPhysics(player2);
         }
 
         function initializeWallPhysics() {
@@ -168,7 +167,8 @@
 
         function update() {
             updatePhysics();
-            updatePlayer(player1, controller1);
+            updatePlayer(player1, controller);
+            updatePlayer(player2, controller);
 
             game.physics.arcade.overlap(redGoal, ball, goalScored);
             game.physics.arcade.overlap(blueGoal, ball, goalScored);
@@ -201,10 +201,17 @@
 
             player1.body.position.setTo(wallWidth,wallWidth);
             player1.body.velocity.setTo(0,0);
+
+            player2.body.position.setTo(wallWidth+fieldLength-playerSpriteWidth,wallWidth);
+            player2.body.velocity.setTo(0,0);
         }
 
         function updatePhysics() {
             game.physics.arcade.collide(player1,ball);
+
+            game.physics.arcade.collide(player2,ball);
+
+            game.physics.arcade.collide(player1,player2);
 
             game.physics.arcade.collide(player1,topWall);
             game.physics.arcade.collide(player1,bottomWall);
@@ -212,6 +219,13 @@
             game.physics.arcade.collide(player1,midBottomLeftWall);
             game.physics.arcade.collide(player1,midTopRightWall);
             game.physics.arcade.collide(player1,midBottomRightWall);
+
+            game.physics.arcade.collide(player2,topWall);
+            game.physics.arcade.collide(player2,bottomWall);
+            game.physics.arcade.collide(player2,midTopLeftWall);
+            game.physics.arcade.collide(player2,midBottomLeftWall);
+            game.physics.arcade.collide(player2,midTopRightWall);
+            game.physics.arcade.collide(player2,midBottomRightWall);
 
             game.physics.arcade.collide(ball,topWall);
             game.physics.arcade.collide(ball,bottomWall);
@@ -243,7 +257,8 @@
         }
 
         function animate() {
-            animatePlayer(player1,controller1);
+            animatePlayer(player1,controller);
+            animatePlayer(player2,controller);
             animateBall(ball);
         }
 
@@ -251,7 +266,16 @@
             game.debug.geom(redGoalRect,'#ff0000');//gives the goal its color
             game.debug.geom(blueGoalRect,'#0000ff');
 
-            game.debug.bodyInfo(player1, 32, 32);
+            //game.debug.bodyInfo(player1, 32, 32);
+
+            game.debug.text("0:"+controller.axis(0),100,200);
+            game.debug.text("1:"+controller.axis(1),100,250);
+            game.debug.text("2:"+controller.axis(2),100,300);
+            game.debug.text("3:"+controller.axis(3),100,350);
+            game.debug.text("4:"+controller.axis(4),100,400);
+            game.debug.text("5:"+controller.axis(5),100,450);
+            game.debug.text("6:"+controller.axis(6),100,500);
+            game.debug.text("7:"+controller.axis(7),100,550);
         }
 
     };
