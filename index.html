@@ -26,6 +26,10 @@
         var playerSpriteWidth = 93;
         var playerSpriteHeight = 123;
 
+        var ballScale = .75;
+        var ballSpriteWidth = 64;
+        var ballRadius = ballScale * ballSpriteWidth/2;
+
         var gameWidth = fieldLength + 2 * wallWidth;
         var gameHeight = fieldWidth + 2 * wallWidth;
 
@@ -64,7 +68,10 @@
             game.load.image('bubble','assets/sprites/bubble2.png');
 
             game.load.spritesheet('soccer_ball', 'assets/sprites/soccerball.png', 64, 64, 7);
-            game.load.spritesheet('player','assets/sprites/red_player_1.png',playerSpriteWidth, playerSpriteHeight, 28);
+            game.load.spritesheet('player1','assets/sprites/red_player_1.png',playerSpriteWidth, playerSpriteHeight, 28);
+            game.load.spritesheet('player2','assets/sprites/blue_player_1.png',playerSpriteWidth, playerSpriteHeight, 28);
+            game.load.spritesheet('player3','assets/sprites/red_player_2.png',playerSpriteWidth, playerSpriteHeight, 28);
+            game.load.spritesheet('player4','assets/sprites/blue_player_2.png',playerSpriteWidth, playerSpriteHeight, 28);
 
             //game.load.spritesheet('omfgdogs','assets/sprites/omfgdogs-spritesheet.png',384,80,48)
         }
@@ -86,8 +93,9 @@
         }
 
         function initializeMusic() {
-            music = game.add.audio('omfgdogs_music');
-            //music.play();
+            music = game.add.audio('omfgdogs_music',1,true);
+            //music = new Phaser.Sound(game,'omfgdogs_music',1,true);
+            music.play();
         }
 
         function initializeSprites() {
@@ -111,7 +119,7 @@
 
             ball = game.add.sprite(gameWidth/2,gameHeight/2,'soccer_ball');
             ball.anchor.setTo(0.5, 0.5);
-            ball.scale.setTo(.75,.75);
+            ball.scale.setTo(ballScale,ballScale);
 
             player1 = initializePlayer(game,1,wallWidth,wallWidth);
             player2 = initializePlayer(game,2,wallWidth+fieldLength-playerSpriteWidth,wallWidth);
@@ -143,6 +151,8 @@
             //This sets the image bounce energy for the horizontal
             // and vertical vectors (as an x,y point). "1" is 100% energy return
             ball.body.bounce.setTo(.8,.8);
+            ball.body.setSize(0,0,ballRadius/3,ballRadius/3);
+            ball.body.setCircle(ballRadius);
 
             initializePlayerPhysics(player1);
             initializePlayerPhysics(player2);
@@ -270,15 +280,25 @@
             game.debug.geom(blueGoalRect,'#0000ff');
 
             //game.debug.bodyInfo(player1, 32, 32);
+            // game.debug.body(player1);
+            // game.debug.body(player2);
+            // game.debug.body(ball);
 
-            game.debug.text("0:"+controller.axis(0),100,200);
-            game.debug.text("1:"+controller.axis(1),100,250);
-            game.debug.text("2:"+controller.axis(2),100,300);
-            game.debug.text("3:"+controller.axis(3),100,350);
-            game.debug.text("4:"+controller.axis(4),100,400);
-            game.debug.text("5:"+controller.axis(5),100,450);
-            game.debug.text("6:"+controller.axis(6),100,500);
-            game.debug.text("7:"+controller.axis(7),100,550);
+            // game.debug.body(topWall);
+            // game.debug.body(bottomWall);
+            // game.debug.body(midTopLeftWall);
+            // game.debug.body(midBottomLeftWall);
+            // game.debug.body(midTopRightWall);
+            // game.debug.body(midBottomRightWall);
+
+            // game.debug.text("0:"+controller.axis(0),100,200);
+            // game.debug.text("1:"+controller.axis(1),100,250);
+            // game.debug.text("2:"+controller.axis(2),100,300);
+            // game.debug.text("3:"+controller.axis(3),100,350);
+            // game.debug.text("4:"+controller.axis(4),100,400);
+            // game.debug.text("5:"+controller.axis(5),100,450);
+            // game.debug.text("6:"+controller.axis(6),100,500);
+            // game.debug.text("7:"+controller.axis(7),100,550);
         }
 
     };

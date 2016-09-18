@@ -6,7 +6,7 @@ var playerBounce = .5;
 function initializePlayer(game,playerNumber,x,y) {
     var playerGroup = game.add.group();
 
-    var player = playerGroup.create(x,y,'player');
+    var player = playerGroup.create(x,y,'player'+playerNumber);
     player.scale.setTo(playerScale,playerScale);
     player.speedValue = playerSpeedValue;
     player.dampening = playerDampeningValue;
@@ -29,6 +29,8 @@ function initializePlayerAnim(player) {
 function initializePlayerPhysics(player) {
     player.body.bounce.setTo(playerBounce,playerBounce);
     player.body.collideWorldBounds = true;
+    //player.body.setSize(0,0,30,30);
+    //player.body.setCircle(45);
 }
 
 function updatePlayer(player, controller) {
