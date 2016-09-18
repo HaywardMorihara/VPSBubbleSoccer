@@ -67,8 +67,8 @@ function updatePlayer(player, controller) {
 	}
 	player.body.velocity.y += cStickUD * player.speedValue;
 
-    player.bubble.x = player.body.position.x;
-    player.bubble.y = player.body.position.y;
+    player.bubble.x = player.body.position.x-5;//better way to do this?
+    player.bubble.y = player.body.position.y+5;//probablt
 }
 
 function animatePlayer(player,controller) {

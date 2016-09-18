@@ -35,6 +35,9 @@
 
         var music;
 
+        var cheer;
+        var bounce;
+
         var redScore = 0;
         var blueScore = 0;
 
@@ -63,6 +66,9 @@
 
         function preload() {
             game.load.audio('omfgdogs_music', ['assets/music/omfgdogs.mp3']);//, 'assets/audio/bodenstaendig_2000_in_rock_4bit.ogg']); //ogg file for Firefox
+            
+            game.load.audio('cheer',['assets/sound_effects/cheer.mp3']);//EpicSoundFX on YouTube
+            game.load.audio('bounce',['assets/sound_effects/bounce.mp3']);//soundbible.com
 
             game.load.image('soccer_field', 'assets/sprites/soccerField.jpg');
             game.load.image('bubble','assets/sprites/bubble2.png');
@@ -80,6 +86,7 @@
         function create() {
             initializeController();
             initializeMusic();
+            initializeSoundEffects();
             initializeSprites();
             initializeAnimations();
             initializePhysics();   
@@ -96,6 +103,13 @@
             music = game.add.audio('omfgdogs_music',1,true);
             //music = new Phaser.Sound(game,'omfgdogs_music',1,true);
             music.play();
+        }
+
+        function initializeSoundEffects() {
+            cheer = game.add.audio('cheer');
+            bounce = game.add.audio('bounce');
+            bounce.addMarker('shortened_bounce',0,.5);
+            bounce.thresholdSpeed = 25;
         }
 
         function initializeSprites() {
@@ -144,15 +158,15 @@
             
             initializeWallPhysics();
 
-            redGoal.body.setSize(wallWidth,goalWidth,0,0);
-            blueGoal.body.setSize(wallWidth,goalWidth,0,0);
+            redGoal.body.setSize(wallWidth/4,goalWidth,0,0);
+            blueGoal.body.setSize(wallWidth/4,goalWidth,wallWidth*3/4,0);
 
             ball.body.collideWorldBounds = true;
             //This sets the image bounce energy for the horizontal
             // and vertical vectors (as an x,y point). "1" is 100% energy return
             ball.body.bounce.setTo(.8,.8);
-            ball.body.setSize(0,0,ballRadius/3,ballRadius/3);
-            ball.body.setCircle(ballRadius);
+            //ball.body.setSize(0,0,ballRadius/3,ballRadius/3);
+            //ball.body.setCircle(ballRadius);
 
             initializePlayerPhysics(player1);
             initializePlayerPhysics(player2);
@@ -198,6 +212,7 @@
         }
 
         function goalScored(goal,ball) {
+            cheer.play();
             if(goal == redGoal){
                 blueScore += 1;
                 blueScoreBoard.setText(blueScore.toString());
@@ -220,11 +235,15 @@
         }
 
         function updatePhysics() {
-            game.physics.arcade.collide(player1,ball);
+            var p1b = game.physics.arcade.collide(player1,ball);
 
-            game.physics.arcade.collide(player2,ball);
+            var p2b = game.physics.arcade.collide(player2,ball);
 
-            game.physics.arcade.collide(player1,player2);
+            var p1p2 = game.physics.arcade.collide(player1,player2);
+
+            playBounce(p1b,player1,ball);
+            playBounce(p2b,player2,ball);
+            playBounce(p1p2,player1,player2);
 
             game.physics.arcade.collide(player1,topWall);
             game.physics.arcade.collide(player1,bottomWall);
@@ -246,6 +265,12 @@
             game.physics.arcade.collide(ball,midBottomLeftWall);
             game.physics.arcade.collide(ball,midTopRightWall);
             game.physics.arcade.collide(ball,midBottomRightWall);
+        }
+
+        function playBounce(isCollision,object1,object2){
+            if(isCollision && (Math.abs(object1.body.speed) > bounce.thresholdSpeed || Math.abs(object2.body.speed) > bounce.thresholdSpeed)){
+                bounce.play('shortened_bounce');
+            }
         }
 
         function checkOverlap(spriteA, spriteB) {
@@ -279,7 +304,7 @@
             game.debug.geom(redGoalRect,'#ff0000');//gives the goal its color
             game.debug.geom(blueGoalRect,'#0000ff');
 
-            //game.debug.bodyInfo(player1, 32, 32);
+            game.debug.bodyInfo(player1, 32, 32);
             // game.debug.body(player1);
             // game.debug.body(player2);
             // game.debug.body(ball);
@@ -290,6 +315,9 @@
             // game.debug.body(midBottomLeftWall);
             // game.debug.body(midTopRightWall);
             // game.debug.body(midBottomRightWall);
+
+            game.debug.body(redGoal);
+            game.debug.body(blueGoal);
 
             // game.debug.text("0:"+controller.axis(0),100,200);
             // game.debug.text("1:"+controller.axis(1),100,250);
