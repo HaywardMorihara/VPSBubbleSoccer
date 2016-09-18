@@ -4,11 +4,18 @@ var playerDampeningValue = 10;
 var playerBounce = .5;
 
 function initializePlayer(game,playerNumber,x,y) {
-    var player = game.add.sprite(x,y,'player');
+    var playerGroup = game.add.group();
+
+    var player = playerGroup.create(x,y,'player');
     player.scale.setTo(playerScale,playerScale);
     player.speedValue = playerSpeedValue;
     player.dampening = playerDampeningValue;
     player.playerNumber = playerNumber
+
+    player.bubble = playerGroup.create(x,y,'bubble');
+    player.bubble.scale.setTo(playerScale,playerScale);
+    playerGroup.sendToBack(player.bubble);
+
     return player;
 }
 
@@ -57,6 +64,9 @@ function updatePlayer(player, controller) {
 		}
 	}
 	player.body.velocity.y += cStickUD * player.speedValue;
+
+    player.bubble.x = player.body.position.x;
+    player.bubble.y = player.body.position.y;
 }
 
 function animatePlayer(player,controller) {

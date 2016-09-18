@@ -23,7 +23,8 @@
         var midWallLength = 160;
         var goalWidth = 540 - 2 * midWallLength;
 
-        var playerSpriteWidth = 111;
+        var playerSpriteWidth = 93;
+        var playerSpriteHeight = 123;
 
         var gameWidth = fieldLength + 2 * wallWidth;
         var gameHeight = fieldWidth + 2 * wallWidth;
@@ -60,9 +61,11 @@
             game.load.audio('omfgdogs_music', ['assets/music/omfgdogs.mp3']);//, 'assets/audio/bodenstaendig_2000_in_rock_4bit.ogg']); //ogg file for Firefox
 
             game.load.image('soccer_field', 'assets/sprites/soccerField.jpg');
+            game.load.image('bubble','assets/sprites/bubble2.png');
 
             game.load.spritesheet('soccer_ball', 'assets/sprites/soccerball.png', 64, 64, 7);
-            game.load.spritesheet('player','assets/sprites/annie.png',playerSpriteWidth, 115, 28);
+            game.load.spritesheet('player','assets/sprites/red_player_1.png',playerSpriteWidth, playerSpriteHeight, 28);
+
             //game.load.spritesheet('omfgdogs','assets/sprites/omfgdogs-spritesheet.png',384,80,48)
         }
 
@@ -84,7 +87,7 @@
 
         function initializeMusic() {
             music = game.add.audio('omfgdogs_music');
-            music.play();
+            //music.play();
         }
 
         function initializeSprites() {
