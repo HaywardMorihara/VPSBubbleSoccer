@@ -20,6 +20,7 @@
         var fourPlayerOption;
 
         var matchBeingPlayed = false;
+        var numberOfPlayers = 2;
 
         var controller;
 
@@ -69,6 +70,9 @@
         var ball;
         var player1;
         var player2;
+        var player3;
+        var player4;
+
         //var omfgDogs;
 
         function preload() {
@@ -105,23 +109,23 @@
                 fill: "#ffffff"
             });
 
-            twoPlayerOption = game.add.text(250+100, game.world.centerY + 100, "2 Players", {
+            twoPlayerOption = game.add.text(250+100, game.world.centerY + 150, "2 Players", {
                 font: "45px Arial",
                 fill: "#ffffff"
             });
             twoPlayerOption.inputEnabled = true;
             twoPlayerOption.events.onInputOver.add(hoverOver,this);
             twoPlayerOption.events.onInputOut.add(hoverOff, this);
-            twoPlayerOption.events.onInputUp.add(initializeMatch,2);
+            twoPlayerOption.events.onInputUp.add(initializeTwoPlayerMatch,this);
 
-            fourPlayerOption = game.add.text(250+100, game.world.centerY + 150, "4 Players", {
+            fourPlayerOption = game.add.text(250+100, game.world.centerY + 200, "4 Players", {
                 font: "45px Arial",
                 fill: "#ffffff"
             });
             fourPlayerOption.inputEnabled = true;
             fourPlayerOption.events.onInputOver.add(hoverOver,this);
             fourPlayerOption.events.onInputOut.add(hoverOff, this);
-            fourPlayerOption.events.onInputUp.add(initializeMatch,4);
+            fourPlayerOption.events.onInputUp.add(initializeFourPlayerMatch,this);
         }
 
         function hoverOver(text) {
@@ -132,10 +136,19 @@
             text.fill = "#ffffff";
         }
 
-        function initializeMatch(numberOfPlayers) {
+        function initializeTwoPlayerMatch(context){
+            initializeMatch(2);
+        }
+
+        function initializeFourPlayerMatch(context){
+            initializeMatch(4);
+        }
+
+        function initializeMatch(numOfPlayers) {
             destroyMenu();
 
             matchBeingPlayed = true;
+            numberOfPlayers = numOfPlayers;
 
             initializeController();
             initializeMusic();
@@ -190,6 +203,10 @@
 
             player1 = initializePlayer(game,1,wallWidth,wallWidth);
             player2 = initializePlayer(game,2,wallWidth+fieldLength-playerSpriteWidth,wallWidth);
+            if(numberOfPlayers == 4) {
+                player3 = initializePlayer(game,3,wallWidth,wallWidth+2*midWallLength+120);
+                player4 = initializePlayer(game,4,wallWidth+fieldLength-playerSpriteWidth,wallWidth+2*midWallLength+120);
+            }
 
             //omfgDogs = game.add.sprite(0,0,'omfgdogs');
 
@@ -200,6 +217,10 @@
 
             initializePlayerAnim(player1);
             initializePlayerAnim(player2);
+            if(numberOfPlayers == 4){
+                initializePlayerAnim(player3);
+                initializePlayerAnim(player4);
+            }
 
             //omfgDogsRunning = omfgDogs.animations.add('omfgdogs_running');
             //omfgDogsRunning.play(10,false);
@@ -207,7 +228,12 @@
 
         function initializePhysics() {
             game.physics.startSystem(Phaser.Physics.ARCADE);
-            game.physics.enable([ball,player1,player2,redGoal,blueGoal,topWall,bottomWall,midTopLeftWall,midBottomLeftWall,midTopRightWall,midBottomRightWall], Phaser.Physics.ARCADE);
+            if(numberOfPlayers == 2){
+                game.physics.enable([ball,player1,player2,redGoal,blueGoal,topWall,bottomWall,midTopLeftWall,midBottomLeftWall,midTopRightWall,midBottomRightWall], Phaser.Physics.ARCADE);
+            }else if (numberOfPlayers == 4){
+                game.physics.enable([ball,player1,player2,player3,player4,redGoal,blueGoal,topWall,bottomWall,midTopLeftWall,midBottomLeftWall,midTopRightWall,midBottomRightWall], Phaser.Physics.ARCADE);
+            }
+            
             
             initializeWallPhysics();
 
@@ -223,6 +249,10 @@
 
             initializePlayerPhysics(player1);
             initializePlayerPhysics(player2);
+            if(numberOfPlayers == 4){
+                initializePlayerPhysics(player3);
+                initializePlayerPhysics(player4);
+            }
         }
 
         function initializeWallPhysics() {
@@ -255,6 +285,10 @@
             updatePhysics();
             updatePlayer(player1, controller);
             updatePlayer(player2, controller);
+            if(numberOfPlayers == 4){
+                updatePlayer(player3,controller);
+                updatePlayer(player4,controller);
+            }
 
             game.physics.arcade.overlap(redGoal, ball, goalScored);
             game.physics.arcade.overlap(blueGoal, ball, goalScored);
@@ -291,17 +325,27 @@
 
             player2.body.position.setTo(wallWidth+fieldLength-playerSpriteWidth,wallWidth);
             player2.body.velocity.setTo(0,0);
+
+            if(numberOfPlayers == 4){
+                player3.body.position.setTo(wallWidth,wallWidth+2*midWallLength+120);
+                player3.body.velocity.setTo(0,0);
+
+                player4.body.position.setTo(wallWidth+fieldLength-playerSpriteWidth,wallWidth+2*midWallLength+120);
+                player4.body.velocity.setTo(0,0);
+            }
         }
 
         function updatePhysics() {
-            var p1b = game.physics.arcade.collide(player1,ball);
+            //I gotta user grouping here...
 
+            var p1b = game.physics.arcade.collide(player1,ball);
             var p2b = game.physics.arcade.collide(player2,ball);
 
             var p1p2 = game.physics.arcade.collide(player1,player2);
 
             playBounce(p1b,player1,ball);
             playBounce(p2b,player2,ball);
+
             playBounce(p1p2,player1,player2);
 
             game.physics.arcade.collide(player1,topWall);
@@ -324,6 +368,42 @@
             game.physics.arcade.collide(ball,midBottomLeftWall);
             game.physics.arcade.collide(ball,midTopRightWall);
             game.physics.arcade.collide(ball,midBottomRightWall);
+
+            if(numberOfPlayers == 4){
+                var p3b = game.physics.arcade.collide(player3,ball);
+                var p4b = game.physics.arcade.collide(player4,ball);
+
+                var p1p3 = game.physics.arcade.collide(player1,player3);
+                var p1p4 = game.physics.arcade.collide(player1,player4);
+
+                var p2p3 = game.physics.arcade.collide(player2,player3);
+                var p2p4 = game.physics.arcade.collide(player2,player4);
+
+                var p3p4 = game.physics.arcade.collide(player3,player4);
+
+                playBounce(p3b,player3,ball);
+                playBounce(p4b,player4,ball);
+
+                playBounce(p1p3,player1,player3);
+                playBounce(p1p4,player1,player4);
+                playBounce(p2p3,player2,player3);
+                playBounce(p2p4,player2,player4);
+                playBounce(p3p4,player3,player3);
+
+                game.physics.arcade.collide(player3,topWall);
+                game.physics.arcade.collide(player3,bottomWall);
+                game.physics.arcade.collide(player3,midTopLeftWall);
+                game.physics.arcade.collide(player3,midBottomLeftWall);
+                game.physics.arcade.collide(player3,midTopRightWall);
+                game.physics.arcade.collide(player3,midBottomRightWall);
+
+                game.physics.arcade.collide(player4,topWall);
+                game.physics.arcade.collide(player4,bottomWall);
+                game.physics.arcade.collide(player4,midTopLeftWall);
+                game.physics.arcade.collide(player4,midBottomLeftWall);
+                game.physics.arcade.collide(player4,midTopRightWall);
+                game.physics.arcade.collide(player4,midBottomRightWall);
+            }
         }
 
         function playBounce(isCollision,object1,object2){
@@ -349,19 +429,21 @@
             //reset Game? menu?
             redScore = 0;
             blueScore = 0;
-
-            //ball.destroy();
         }
 
         function animate() {
             animatePlayer(player1,controller);
             animatePlayer(player2,controller);
+            if(numberOfPlayers == 4){
+                animatePlayer(player3,controller);
+                animatePlayer(player4,controller);
+            }
             animateBall(ball);
         }
 
         function render() {
             if(matchBeingPlayed) {
-                //renderMatch();
+                renderMatch();
             }
         }
 
@@ -369,7 +451,7 @@
             game.debug.geom(redGoalRect,'#ff0000');//gives the goal its color
             game.debug.geom(blueGoalRect,'#0000ff');
 
-            game.debug.bodyInfo(player1, 32, 32);
+            // game.debug.bodyInfo(player1, 32, 32);
             // game.debug.body(player1);
             // game.debug.body(player2);
             // game.debug.body(ball);
@@ -381,17 +463,17 @@
             // game.debug.body(midTopRightWall);
             // game.debug.body(midBottomRightWall);
 
-            game.debug.body(redGoal);
-            game.debug.body(blueGoal);
+            // game.debug.body(redGoal);
+            // game.debug.body(blueGoal);
 
-            game.debug.text("0:"+controller.axis(0),100,200);
-            game.debug.text("1:"+controller.axis(1),100,250);
-            game.debug.text("2:"+controller.axis(2),100,300);
-            game.debug.text("3:"+controller.axis(3),100,350);
-            game.debug.text("4:"+controller.axis(4),100,400);
-            game.debug.text("5:"+controller.axis(5),100,450);
-            game.debug.text("6:"+controller.axis(6),100,500);
-            game.debug.text("7:"+controller.axis(7),100,550);
+            // game.debug.text("0:"+controller.axis(0),100,200);
+            // game.debug.text("1:"+controller.axis(1),100,250);
+            // game.debug.text("2:"+controller.axis(2),100,300);
+            // game.debug.text("3:"+controller.axis(3),100,350);
+            // game.debug.text("4:"+controller.axis(4),100,400);
+            // game.debug.text("5:"+controller.axis(5),100,450);
+            // game.debug.text("6:"+controller.axis(6),100,500);
+            // game.debug.text("7:"+controller.axis(7),100,550);
         }
 
         function destroyMenu() {
