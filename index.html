@@ -70,9 +70,6 @@
         var midTopRightWall;
         var midBottomRightWall;
 
-        var redGoalRect;
-        var blueGoalRect;
-
         var redGoal;
         var blueGoal;
 
@@ -95,6 +92,7 @@
 
             game.load.image('soccer_field', 'assets/sprites/soccerField.jpg');
             game.load.image('bubble','assets/sprites/bubble2.png');
+            game.load.image('goal','assets/sprites/goal.png');
 
             game.load.spritesheet('soccer_ball', 'assets/sprites/soccerball.png', 64, 64, 7);
             game.load.spritesheet('player1','assets/sprites/red_player_1.png',playerSpriteWidth, playerSpriteHeight, 28);
@@ -200,11 +198,8 @@
             midTopRightWall = game.add.sprite(wallWidth+fieldLength, wallWidth, null);
             midBottomRightWall = game.add.sprite(wallWidth+fieldLength, wallWidth+midWallLength+goalWidth, null);
 
-            redGoalRect = new Phaser.Rectangle(0, wallWidth+midWallLength, wallWidth, goalWidth);
-            blueGoalRect = new Phaser.Rectangle(wallWidth+fieldLength, wallWidth+midWallLength, wallWidth, goalWidth);
-
-            redGoal = game.add.sprite(0, wallWidth+midWallLength, null);
-            blueGoal = game.add.sprite(wallWidth+fieldLength, wallWidth+midWallLength, null); 
+            redGoal = game.add.sprite(0, wallWidth+midWallLength, 'goal');
+            blueGoal = game.add.sprite(wallWidth+fieldLength, wallWidth+midWallLength, 'goal'); 
 
             ball = game.add.sprite(gameWidth/2,gameHeight/2,'soccer_ball');
             ball.anchor.setTo(0.5, 0.5);
@@ -489,9 +484,6 @@
         }
 
         function renderMatch() {
-            game.debug.geom(redGoalRect,'#ff0000');//gives the goal its color
-            game.debug.geom(blueGoalRect,'#0000ff');
-
             // game.debug.bodyInfo(player1, 32, 32);
             // game.debug.body(player1);
             // game.debug.body(player2);
@@ -507,14 +499,14 @@
             // game.debug.body(redGoal);
             // game.debug.body(blueGoal);
 
-            game.debug.text("0:"+controller.axis(0),100,200);
-            game.debug.text("1:"+controller.axis(1),100,250);
-            game.debug.text("2:"+controller.axis(2),100,300);
-            game.debug.text("3:"+controller.axis(3),100,350);
-            game.debug.text("4:"+controller.axis(4),100,400);
-            game.debug.text("5:"+controller.axis(5),100,450);
-            game.debug.text("6:"+controller.axis(6),100,500);
-            game.debug.text("7:"+controller.axis(7),100,550);
+            // game.debug.text("0:"+controller.axis(0),100,200);
+            // game.debug.text("1:"+controller.axis(1),100,250);
+            // game.debug.text("2:"+controller.axis(2),100,300);
+            // game.debug.text("3:"+controller.axis(3),100,350);
+            // game.debug.text("4:"+controller.axis(4),100,400);
+            // game.debug.text("5:"+controller.axis(5),100,450);
+            // game.debug.text("6:"+controller.axis(6),100,500);
+            // game.debug.text("7:"+controller.axis(7),100,550);
         }
 
         function destroyMenu() {
