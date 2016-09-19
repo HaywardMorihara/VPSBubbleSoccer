@@ -14,6 +14,13 @@
 
     window.onload = function() {
 
+        var vpsLogo;
+        var titleText;
+        var twoPlayerOption;
+        var fourPlayerOption;
+
+        var matchBeingPlayed = false;
+
         var controller;
 
         var fieldLength = 720;
@@ -70,6 +77,8 @@
             game.load.audio('cheer',['assets/sound_effects/cheer.mp3']);//EpicSoundFX on YouTube
             game.load.audio('bounce',['assets/sound_effects/bounce.mp3']);//soundbible.com
 
+            game.load.image('vps_logo','assets/sprites/VPS_Logo.png');
+
             game.load.image('soccer_field', 'assets/sprites/soccerField.jpg');
             game.load.image('bubble','assets/sprites/bubble2.png');
 
@@ -84,12 +93,56 @@
 
 
         function create() {
+            initializeMenu();
+        }
+
+        function initializeMenu() {
+            vpsLogo = game.add.sprite(250,0,'vps_logo');
+            vpsLogo.scale.setTo(.5,.5);
+
+            titleText = game.add.text(250, game.world.centerY, "Bubble Soccer", {
+                font: "65px Arial",
+                fill: "#ffffff"
+            });
+
+            twoPlayerOption = game.add.text(250+100, game.world.centerY + 100, "2 Players", {
+                font: "45px Arial",
+                fill: "#ffffff"
+            });
+            twoPlayerOption.inputEnabled = true;
+            twoPlayerOption.events.onInputOver.add(hoverOver,this);
+            twoPlayerOption.events.onInputOut.add(hoverOff, this);
+            twoPlayerOption.events.onInputUp.add(initializeMatch,2);
+
+            fourPlayerOption = game.add.text(250+100, game.world.centerY + 150, "4 Players", {
+                font: "45px Arial",
+                fill: "#ffffff"
+            });
+            fourPlayerOption.inputEnabled = true;
+            fourPlayerOption.events.onInputOver.add(hoverOver,this);
+            fourPlayerOption.events.onInputOut.add(hoverOff, this);
+            fourPlayerOption.events.onInputUp.add(initializeMatch,4);
+        }
+
+        function hoverOver(text) {
+            text.fill = "#ffff00";
+        }
+
+        function hoverOff(text) {
+            text.fill = "#ffffff";
+        }
+
+        function initializeMatch(numberOfPlayers) {
+            destroyMenu();
+
+            matchBeingPlayed = true;
+
             initializeController();
             initializeMusic();
             initializeSoundEffects();
             initializeSprites();
             initializeAnimations();
-            initializePhysics();   
+            initializePhysics(); 
         }
 
         function initializeController() {
@@ -193,6 +246,12 @@
         }
 
         function update() {
+            if(matchBeingPlayed){
+                updateMatch();
+            }
+        }
+
+        function updateMatch() {
             updatePhysics();
             updatePlayer(player1, controller);
             updatePlayer(player2, controller);
@@ -301,6 +360,12 @@
         }
 
         function render() {
+            if(matchBeingPlayed) {
+                //renderMatch();
+            }
+        }
+
+        function renderMatch() {
             game.debug.geom(redGoalRect,'#ff0000');//gives the goal its color
             game.debug.geom(blueGoalRect,'#0000ff');
 
@@ -319,14 +384,25 @@
             game.debug.body(redGoal);
             game.debug.body(blueGoal);
 
-            // game.debug.text("0:"+controller.axis(0),100,200);
-            // game.debug.text("1:"+controller.axis(1),100,250);
-            // game.debug.text("2:"+controller.axis(2),100,300);
-            // game.debug.text("3:"+controller.axis(3),100,350);
-            // game.debug.text("4:"+controller.axis(4),100,400);
-            // game.debug.text("5:"+controller.axis(5),100,450);
-            // game.debug.text("6:"+controller.axis(6),100,500);
-            // game.debug.text("7:"+controller.axis(7),100,550);
+            game.debug.text("0:"+controller.axis(0),100,200);
+            game.debug.text("1:"+controller.axis(1),100,250);
+            game.debug.text("2:"+controller.axis(2),100,300);
+            game.debug.text("3:"+controller.axis(3),100,350);
+            game.debug.text("4:"+controller.axis(4),100,400);
+            game.debug.text("5:"+controller.axis(5),100,450);
+            game.debug.text("6:"+controller.axis(6),100,500);
+            game.debug.text("7:"+controller.axis(7),100,550);
+        }
+
+        function destroyMenu() {
+            vpsLogo.destroy();
+            titleText.destroy();
+            twoPlayerOption.destroy();
+            fourPlayerOption.destroy();
+        }
+
+        function destroyMatch() {
+
         }
 
     };
