@@ -21,7 +21,7 @@
 
         var matchBeingPlayed = false;
         var numberOfPlayers = 2;
-        var goalsToWin = 1;
+        var goalsToWin = 5;
 
         var controller;
 
@@ -198,9 +198,6 @@
             midTopRightWall = game.add.sprite(wallWidth+fieldLength, wallWidth, null);
             midBottomRightWall = game.add.sprite(wallWidth+fieldLength, wallWidth+midWallLength+goalWidth, null);
 
-            redGoal = game.add.sprite(0, wallWidth+midWallLength, 'goal');
-            blueGoal = game.add.sprite(wallWidth+fieldLength, wallWidth+midWallLength, 'goal'); 
-
             ball = game.add.sprite(gameWidth/2,gameHeight/2,'soccer_ball');
             ball.anchor.setTo(0.5, 0.5);
             ball.scale.setTo(ballScale,ballScale);
@@ -211,6 +208,9 @@
                 player3 = initializePlayer(game,3,wallWidth,wallWidth+2*midWallLength+120);
                 player4 = initializePlayer(game,4,wallWidth+fieldLength-playerSpriteWidth,wallWidth+2*midWallLength+120);
             }
+
+            redGoal = game.add.sprite(0, wallWidth+midWallLength, 'goal');
+            blueGoal = game.add.sprite(wallWidth+fieldLength, wallWidth+midWallLength, 'goal'); 
         }
 
         function initializeAnimations() {
@@ -241,7 +241,7 @@
             //ball.body.collideWorldBounds = true;
             //This sets the image bounce energy for the horizontal
             // and vertical vectors (as an x,y point). "1" is 100% energy return
-            ball.body.bounce.setTo(.8,.8);
+            ball.body.bounce.setTo(1,1);
             //ball.body.setSize(0,0,ballRadius/3,ballRadius/3);
             //ball.body.setCircle(ballRadius);
 
