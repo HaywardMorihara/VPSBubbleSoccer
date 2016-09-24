@@ -1,30 +1,52 @@
-//Player 1
-//X = 0
-//A = 1
-//B = 2
-//Y = 3
-//L = 4
-//R = 5
-//Z = 7
-//Start = 9
-//DUp = 12
-//DRight = 13
-//DDown = 14
-//DLeft = 15
+//This needs to be used more where controller code is 
+//renamce 'controller' in index.html
 
-//StickLeft/Right = 0
-//StickUp/Down = 4
-//CStickLeft/Right = 23
-//CStickUp/Down = 11
-//L2 = 12
-//R2 = 18
+//support Gamecube controllers on Windows AND Mac, and alternative controller solution
+//maybe arrows and WASD?
+//never actually tested that Mac still works..
 
-//Axis
-//P1LR = 0
-//P1UD = 4
-//P2LR = 1
-//P2UD = 5
-//P3LR = 2
-//P3UD = 6
-//P4LR = 3
-//P4UD = 7
+//Temporary solution: just use arrows for player one
+
+var leftKey;
+var rightKey;
+var upKey;
+var downKey
+
+
+function initializeControllerJS(game) {
+	leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+	rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+	upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+	downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+}
+
+
+function determineCStickLR(controller, player) {
+	var cStickLR = controller.axis(player.playerNumber - 1);
+	if(!cStickLR){
+	    if(leftKey.isDown && player.playerNumber == 1) {
+	    	cStickLR = -1;
+	    }else if (rightKey.isDown && player.playerNumber == 1){
+	    	cStickLR = 1;
+	    }else{
+	    	cStickLR = 0;
+	    }
+	}
+	console.log(cStickLR);
+	return cStickLR;
+}
+
+function determineCStickUD(controller, player) {
+	var cStickUD = controller.axis(player.playerNumber == 1? 4 : player.playerNumber == 2? 6 : player.playerNumber == 3? 5 : 7);
+	if(!cStickUD){ 
+	    if(downKey.isDown && player.playerNumber == 1) {
+	    	cStickUD = 1;
+	    }else if (upKey.isDown && player.playerNumber == 1){
+	    	cStickUD = -1;
+	    }else{
+	    	cStickUD = 0;
+	    }
+	}
+	return cStickUD;
+}
+

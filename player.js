@@ -34,8 +34,8 @@ function initializePlayerPhysics(player) {
 }
 
 function updatePlayer(player, controller) {
-	var cStickLR = controller.axis(player.playerNumber - 1);
-    var cStickUD = controller.axis(player.playerNumber == 1? 4 : player.playerNumber == 2? 6 : player.playerNumber == 3? 5 : 7);
+	var cStickLR = determineCStickLR(controller,player);
+    var cStickUD = determineCStickUD(controller,player);
 
 	if(player.body.velocity.x > 0 && cStickLR <= 0) {
 		if (player.body.velocity.x - player.dampening < 0) {
@@ -71,9 +71,9 @@ function updatePlayer(player, controller) {
     player.bubble.y = player.body.position.y+5;//probablt
 }
 
-function animatePlayer(player,controller) {
-    var cStickLR = controller.axis(player.playerNumber - 1);
-    var cStickUD = controller.axis(player.playerNumber == 1? 4 : player.playerNumber == 2? 6 : player.playerNumber == 3? 5 : 7);
+function animatePlayer(player, controller) {
+    var cStickLR = determineCStickLR(controller,player);
+    var cStickUD = determineCStickUD(controller,player);
 
 	var fps = 5 + Math.min(1, Math.max(Math.abs(player.body.velocity.x), Math.abs(player.body.velocity.y)) / 200) * 20;
     if(player.body.velocity.x == 0 && player.body.velocity.y == 0) {

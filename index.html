@@ -171,6 +171,8 @@
             game.input.gamepad.start();
             // To listen to buttons from a specific pad listen directly on that pad game.input.gamepad.padX, where X = pad 1-4
             controller = game.input.gamepad.pad1;
+
+            initializeControllerJS(game);
         }
 
         function initializeMusic() {
