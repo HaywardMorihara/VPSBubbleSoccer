@@ -6,6 +6,7 @@
 //never actually tested that Mac still works..
 
 //Temporary solution: just use arrows for player one
+var controller;
 
 var leftKey;
 var rightKey;
@@ -17,6 +18,14 @@ var dKey;
 var wKey;
 var sKey;
 
+function initializeController(game) {
+        //Gamecube only works in Firefox...might be able to get external library if I want
+        game.input.gamepad.start();
+        // To listen to buttons from a specific pad listen directly on that pad game.input.gamepad.padX, where X = pad 1-4
+        controller = game.input.gamepad.pad1;
+
+        initializeControllerJS(game);
+    }
 
 function initializeControllerJS(game) {
 	leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
